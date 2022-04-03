@@ -1,4 +1,4 @@
-const { User } = require("../models");
+const { User, Friends } = require("../models");
 
 const userController = {
   //all Users
@@ -80,4 +80,17 @@ const userController = {
       })
       .catch((err) => res.json(err));
   },
+
+  // remove Friend
+  removeFriend({ params }, res) {
+    Friends.findOneAndUpdate(
+      { _id: params.friendId },
+      { $pull: { friend: { friendId: params.friendId } } },
+      { new: true }
+    )
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => res.json(err));
+  },
 };
+
+module.exports = userController;

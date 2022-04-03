@@ -83,7 +83,7 @@ const thoughtController = {
 
   //remove Reaction
   removeReaction({ params }, res) {
-    Thought.findOneAndUpdata(
+    Thought.findOneAndUpdate(
       { _id: params.commentId },
       { $pull: { reaction: { reactionId: params.reactionId } } },
       { new: true }
@@ -93,4 +93,4 @@ const thoughtController = {
   },
 };
 
-module.exports = commentController;
+module.exports = thoughtController;
