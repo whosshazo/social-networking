@@ -1,25 +1,42 @@
-const { Schema, model } = require('mongoose');
+const { Schema, model } = require("mongoose");
 
 const UserSchema = new Schema(
-    {
-        username: {
-            type: String,
-            unique: true,
-            required: "Username is required",
-            trim: true
-        },
-        email: {
-            type: String,
-            required: "Email is required",
-            unique: true,
-            match: [/.+@.+\..+/]
-        },
-        thoughts: [ThoughtsSchema],
+  {
+    username: {
+      type: String,
+      unique: true,
+      required: "Username is required",
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: "Email is required",
+      unique: true,
+      match: [/.+@.+\..+/],
+    },
+    thoughts: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Thought",
+      },
+    ],
 
-        friends: [UserSchema]
-    }
+    friends: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+  },
+  {
+    toJSON: {
+      getters: true,
+    },
+
+    id: false,
+  }
 );
 
 const User = model("User", UserSchema);
 
-module.exports = User; 
+module.exports = User;

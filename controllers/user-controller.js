@@ -14,7 +14,7 @@ const userController = {
   },
 
   // single User
-  getSingelUser(req, res) {
+  getSingleUser(req, res) {
     User.findOne({ _id: req.params.thoughtId })
       .then((dbUserData) => {
         if (!dbUserData) {
@@ -68,7 +68,7 @@ const userController = {
     this.addFriend
       .findOneAndUpdate(
         { _id: params.friendId },
-        { $push: { friend: body } },
+        { $addToSet: { friend: body } },
         { new: true, runValidators: true }
       )
       .then((dbUserData) => {

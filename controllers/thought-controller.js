@@ -2,7 +2,7 @@ const { Thought, User } = require("../models");
 
 const thoughtController = {
   // all thoughts
-  getThroughts(req, res) {
+  getThought(req, res) {
     Thought.find()
       .sort({ createdAt: -1 })
       .then((dbThoughtData) => {
@@ -65,12 +65,11 @@ const thoughtController = {
 
   //add Reaction
   addReaction({ params, body }, res) {
-    this.addReaction
-      .findOneAndUpdate(
-        { _id: params.reactionId },
-        { $push: { reaction: body } },
-        { new: true, runValidators: true }
-      )
+    Thought.findOneAndUpdate(
+      { _id: params.reactionId },
+      { $addToSet: { reaction: body } },
+      { new: true, runValidators: true }
+    )
       .then((dbThoughtData) => {
         if (!dbThoughtData) {
           res.status(404).json({ message: "Sory, zero thoughts for this id" });

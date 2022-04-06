@@ -1,26 +1,27 @@
 const { Schema, model } = require("mongoose");
-const Reaction = require("./reactions");
 const dateFormat = require("../utils/dateFormat");
 
-const ThoughtsSchema = new Schema(
+const ReactionSchema = new Schema(
   {
-    thoughtText: {
+    reactionId: {
+      type: Schema.Types.ObjectId,
+      default: () => new Types.ObjectId(),
+    },
+    reactionBody: {
       type: String,
       required: true,
       minlength: 1,
       maxlength: 280,
     },
-    ceatedAt: {
-      type: Date,
-      default: Date.now,
-      get: timeStamp => dateFormat(timeStamp)
-    },
     username: {
       type: String,
       required: true,
     },
-
-    reaction: [Reaction],
+    cretedAt: {
+      type: Date,
+      default: Date.now,
+      get: (timeStamp) => dateFormat(timeStamp),
+    },
   },
   {
     toJSON: {
@@ -31,6 +32,4 @@ const ThoughtsSchema = new Schema(
   }
 );
 
-const Thoughts = model("Thoughts", ThoughtsSchema);
-
-module.exports = Thoughts;
+module.exports = ReactionSchema;
