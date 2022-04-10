@@ -1,10 +1,19 @@
-const { User, Friends } = require("../models");
+const { User, Thought } = require("../models");
 
 const userController = {
   //all Users
   getUsers(req, res) {
-    User.find()
-      .sort({ createdAt: -1 })
+    User.find({})
+      .populate({
+        path: "thoughts",
+        select: "-__v",
+      })
+      .populate({
+        path: "friends",
+        select: "-__v",
+      })
+      .select("-__v")
+      .sort({ _id: -1 })
       .then((dbUserData) => {
         res.json(dbUserData);
       })
@@ -16,12 +25,16 @@ const userController = {
   // single User
   getSingleUser(req, res) {
     User.findOne({ _id: req.params.thoughtId })
+      .populate({
+        path: "thoughts",
+        select: "-__v",
+      })
+      .populate({
+        path: "friends",
+        select: "-__v",
+      })
+      .select("-__v")
       .then((dbUserData) => {
-        if (!dbUserData) {
-          return res
-            .status(404)
-            .json({ message: "Sorry, zero users for this id" });
-        }
         res.json(dbUserData);
       })
       .catch((err) => {
@@ -30,14 +43,20 @@ const userController = {
   },
 
   // create User
-  createUser(req, res) {
-    User.create(req, body)
-      .then((dbUserData) => {
-        res.json(dbUserData);
-      })
-      .catch((err) => {
-        res.status(404).json(err);
-      });
+  // createUser(req, res) {
+  //   User.create(req, body)
+  //     .then((dbUserData) => {
+  //       res.json(dbUserData);
+  //     })
+  //     .catch((err) => {
+  //       res.status(404).json(err);
+  //     });
+  // },
+
+  createUser({ body }, res) {
+    User.create(body)
+      .then((dbUserData) => res.json(dbUserData))
+      .catch((err) => res.json(err));
   },
 
   //update User
@@ -64,13 +83,12 @@ const userController = {
   },
 
   //add Friend
-  addFriend({ params, body }, res) {
-    this.addFriend
-      .findOneAndUpdate(
-        { _id: params.friendId },
-        { $addToSet: { friend: body } },
-        { new: true, runValidators: true }
-      )
+  addFriend({ params }, res) {
+    User.findOneAndUpdate(
+      { _id: params.userId },
+      { $addToSet: { friends: params.friendId } },
+      { new: true, runValidators: true }
+    )
       .then((dbUserData) => {
         if (!dbUserData) {
           res.status(404).json({ message: "Sorry, zero friends for this id" });

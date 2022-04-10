@@ -31,9 +31,13 @@ const thoughtController = {
 
   // create Thought
   createThought(req, res) {
-    Thought.create(req, body)
+    Thought.create(req.body)
       .then((dbThoughtData) => {
-        res.json(dbThoughtData);
+        return User.findOneAndUpdate(
+          { _id: req.body.UserId },
+          { $addToSet: { thoughts: dbThoughtData._id } },
+          { new: true }
+        );
       })
       .catch((err) => {
         res.status(404).json(err);
@@ -59,7 +63,14 @@ const thoughtController = {
   //delete Thought
   deleteThought({ params }, res) {
     Thought.findOneAndDelete({ _id: params.id })
-      .then((dbThoughtData) => res.json(dbThoughtData))
+      .then((dbThoughtData) => {
+        return User.findOneAndUpdate(
+          { thoughts: params.thoughtId },
+          { $addToSet: { thoughts: params.thoughtId } },
+          { new: true }
+        );
+      })
+      .then(() => res.json())
       .catch((err) => res.json(err));
   },
 
@@ -67,7 +78,7 @@ const thoughtController = {
   addReaction({ params, body }, res) {
     Thought.findOneAndUpdate(
       { _id: params.reactionId },
-      { $addToSet: { reaction: body } },
+      { $addToSet: { reactions: body } },
       { new: true, runValidators: true }
     )
       .then((dbThoughtData) => {
