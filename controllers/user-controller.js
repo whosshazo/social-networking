@@ -1,22 +1,20 @@
-const { User, Thought } = require("../models");
+const { User, Thoughts } = require("../models");
 
 const userController = {
   //all Users
   getUsers(req, res) {
     User.find({})
       .populate({
-        path: "thoughts",
+        path: "friends",
         select: "-__v",
       })
       .populate({
-        path: "friends",
+        path: "thoughts",
         select: "-__v",
       })
       .select("-__v")
       .sort({ _id: -1 })
-      .then((dbUserData) => {
-        res.json(dbUserData);
-      })
+      .then((dbUserData) => res.json(dbUserData))
       .catch((err) => {
         res.status(404).json(err);
       });
@@ -41,17 +39,6 @@ const userController = {
         res.status(404).json(err);
       });
   },
-
-  // create User
-  // createUser(req, res) {
-  //   User.create(req, body)
-  //     .then((dbUserData) => {
-  //       res.json(dbUserData);
-  //     })
-  //     .catch((err) => {
-  //       res.status(404).json(err);
-  //     });
-  // },
 
   createUser({ body }, res) {
     User.create(body)
